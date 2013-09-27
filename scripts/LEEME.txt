@@ -1,0 +1,100 @@
+"""
+Abiesweb - Consultas simples catálogo de abies
+Copyright (C) 2012  Francisco Mora <francisco.mora.sanchez@gmail.com>
+
+License: LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+
+"""
+
+Esto es una pequeña utilidad que hice hace tiempo para poder consultar a través de una aplicación web desarrollada con web2py, el catálogo de
+nuestra biblioteca abies. Es muy primitiva, ya que fue cuando comencé con web2py, pero creo que útil quizá para algunos. Los pasos para 
+instalarla son los que describo a continuación. Debemos tener los siguientes archivos, es importante que los scripts mdb2tool y
+abies.sh tengan permisos de ejecución:
+	
+	. abies.mdb -> evidentemente los datos del programa abies
+	. abies.sh -> script que procesa el mdb e incorpora los datos en mysql
+	. mdb2mysql -> script perl que genera el SQL desde el MDB
+	. abiesweb.tar.gz -> aplicación web2py abiesweb
+	. web2pyapache -> configuración apache web2py
+
+PASOS:
+
+1. Debemos crear en nuestro servidor mysql, bien desde la consola mysql o bien desde phpmyadmin,
+una base de datos con las siguientes características:
+
+	nombre: abies
+	codificación: UTF-8 España
+
+
+2. Creación de un usuario con nombre "abies", sin contraseña y permiso de lectura/escritura en esta base de datos.
+
+3. Cada cierto periodo de tiempo procederemos a importar los datos a esta base de datos desde el fichero "abies.mdb"
+de la aplicación abies. Así tendremos actualizada la base de datos hasta el momento en que lo realizamos. Este proceso es el que
+hay que realizar de forma periódica. Es necesario que donde ejecutemos el script tengamos instalado los paquetes debian
+"mdbtools" y "mysql-client", además de y en la misma carpeta esté el archivo abies.mdb. Este script exporta la base de datos de access de abies a un
+formato SQL que entiende mysql e importa a mysql esos datos. Ejecutaremos la orden:
+
+	./abies.sh 
+
+	Podemos ver la base de datos con phpmyadmin.
+
+	Hemos de tener en cuenta que si el proceso lo realizamos en una máquina que no es la que tiene el servidor mysql, hemos de
+configurar el servidor mysql para que acepte peticiones que provengan de máquinas que no sean ella misma, esto se hace editando
+el fichero "/etc/mysql/my.cnf", del ordenador con el servidor mysql, comentando la línea:
+
+	#bind-address           = 127.0.0.1
+
+	Para permitir conexiones de otras máquinas clientes. Una vez hecho esto reiniciamos el servicio mysql para que tome la nueva
+configuración.
+
+4. Lo siguiente consiste en descargar el web2py de la página del proyecto: "http://www.web2py.com/examples/static/web2py_src.zip".
+Descomprimimos este archivo en una carpeta del servidor mysql, por ejemplo "/var/www/web2py". Para arrancar el framework:
+
+	unzip web2py_src.zip
+	chown -R www-data:www-data web2py
+	cd /var/www/web2py
+
+5. Ahora debemos instalar la aplicación abiesweb. Para ello, y siguiendo con la secuencia anterior:
+
+	cd /var/www/web2py/applications	
+	tar xvzf dondetenemosabiesweb.tar.gz .
+
+	Descomprimimos el archivo abiesweb.tar.gz en esa ruta y se habrá creado la carpeta abiesweb
+
+6. Para arrancar web2py, con el servidor web que lleva integrado (modo "lento"), lento si el número de peticiones es elevado,
+realizaremos lo siguiente:
+
+	cd /var/www/web2py
+	python web2py.py -a "passwordquequeramosparaadministracion" &
+
+Este comando arrancará un proceso web en el puerto 8000.
+
+7. Ya podremos probar si todo ha ido bien. Para ello abriremos un navegador web e iremos a la siguiente página:
+
+	http://nombremaquina:8000/abiesweb
+
+	Donde nombremaquina tiene que ser sustituido por el nombre de la máquina en que hemos descargado web2py. Una vez aquí podremos buscar
+por título, autor/a, editorial. La caja de texto espera a teclear al menos 4 caracteres y una vez tecleados realiza búsquedas a la base
+de datos apareciendo debajo de la caja de texto el resultado. Cuando pinchamos en un libro nos aparece una pequeña ficha de información,
+que incluye los ejemplares existentes, localización, etc. Además podremos acceder desde aquí a los títulos de la editorial o bien a las
+obras de algún autor/a.
+
+	El proceso web2py se ha quedado funcionando en segundo plano. Si reiniciamos la máquina tendremos que volver a iniciarlo manualmente.
+
+8. (Recomendado) Si queremos mayor velocidad de proceso, la forma que voy a describir hace que sea apache quien sirve la aplicación o aplicaciones que estén metidas
+en web2py. Tendremos que utilizar la extensión WSGI de apache, para que éste procese las peticiones y no el servidor web integrado de web2py, para ello hay que
+hacer varias modificaciones, evidentemente hay que tener instalado apache2 y libapache2-mod-wsgi.
+
+	Ya no es necesario arrancar el proceso web2py (punto 6), si lo está deberemos hacer un kill al proceso para eliminarlo, ya que sino apache se 
+quejará de que hay otro proceso sirviendo en el puerto 8000. Este puerto puede cambiarse sin problema.
+	
+	Copiaremos en /etc/apache2/sites-available el fichero "web2pyapache" y activaremos el sitio:
+	
+	cp dondetenemosweb2pyapache /etc/apache2/sites-available
+	a2ensite web2pyapache
+	service apache2 restart
+
+Si todo ha ido bien visitando el enlace del punto 7, podremos acceder a la misma aplicación pero siendo apache quien la sirve.
+
+
+
