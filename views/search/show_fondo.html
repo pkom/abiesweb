@@ -1,0 +1,30 @@
+{{extend 'layout.html'}}
+<h1>{{=T('Book file')}}</h1>
+<h2>{{=fondo.Titulo}}</h2>
+<hr>
+<ul>
+<h3>{{=T('Authors')}}</h3><br>
+{{for autor in autores:}}
+{{=LI(A(autor.a, _href=URL("show_autor_fondos", args=autor.IdAutor)))}}
+{{pass}}
+</ul>
+<hr>
+<h3>{{=T('Book Data')}}</h3><br>
+<TABLE>
+{{=TR(TD(B(T('Publisher'))), TD(":"),TD(A(editorial.Editorial, _href=URL("show_editorial_fondos", args=editorial.IdEditorial)) if editorial != None else "" ), TD(B(T('Notes'))), TD(":"),TD(fondo.Notas))}}
+{{=TR(TD(B(T('Edition year'))), TD(":"),TD(fondo.AnoEdicion), TD(B(T('Date 1'))), TD(":"),TD(fondo.Fecha1Info))}}
+{{=TR(TD(B(T('Edition'))), TD(":"),TD(fondo.Edicion), TD(B(T('Country'))), TD(":"),TD(fondo.IdPaisInfo))}}
+{{=TR(TD(B(T('Edition site'))), TD(":"),TD(fondo.LugarEdicion), TD(B(T('Language'))), TD(":"),TD(fondo.IdLenguaInfo))}}
+{{=TR(TD(B(T('Folding type'))), TD(":"),TD(tipofondo.TipoFondo if tipofondo != None else ""), TD(B(T('Legal Deposit'))), TD(":"),TD(fondo.DepositoLegal))}}
+{{=TR(TD(B(T('Pages'))), TD(":"),TD(fondo.Extension), TD(B(T('ISBN'))), TD(":"),TD(fondo.ISBN))}}
+{{=TR(TD(B(T('Physical characteristics'))), TD(":"),TD(fondo.CaracteristicasFisicas), TD(B(T('Subtitle'))), TD(":"),TD(fondo.Subtitulo))}}
+{{=TR(TD(B(T('Dimensions'))), TD(":"),TD(fondo.Dimensiones), TD(B(T('Portrait'))), TD(":"),TD(fondo.RestoPortada))}}
+</TABLE>
+<hr>
+<h3>{{=T('Copies')}}</h3><br>
+<TABLE>
+{{=TR(TD(B(T('Site'))), TD(":"), TD(B(T('Type'))), TD(":"), TD(B(T('Leased'))))}}
+{{for ejemplar in ejemplares:}}
+{{=TR(TD(ubicacionestipos[ejemplar.IdEjemplar][1]), TD(":"), TD(ubicacionestipos[ejemplar.IdEjemplar][0]), TD(":"), TD(B("Si" if ejemplar.Prestado== "1" else "No")))}}
+{{pass}}
+</TABLE>

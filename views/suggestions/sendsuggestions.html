@@ -1,0 +1,6 @@
+{{extend 'layout.html'}}
+{{=H3(T('Send messages or suggestions to the charge of the library'))}}
+{{=H4(T('Your IP address will be recorded to avoid fakes'))}}
+{{=H5(T('IP address:')+session.ip)}}
+{{=form}}
+{{#=BEAUTIFY(response._vars)}}

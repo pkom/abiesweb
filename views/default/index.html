@@ -1,0 +1,18 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'layout.html'}}
+
+{{if 'message' in globals():}}
+
+<h1>{{#=message}}</h1>
+
+<hr />
+<ul>
+  <li>{{=T('Desarrollado por Francisco Mora Sánchez (francisco.mora.sanchez at gmail dot com)')}}</li>
+</ul>
+
+{{else:}}
+{{=BEAUTIFY(response._vars)}}
+{{pass}}
+
+{{block left_sidebar}}New Left Sidebar Content{{end}}
+{{block right_sidebar}}New Right Sidebar Content{{end}}

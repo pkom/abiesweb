@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+<h1>{{=T('Author\'s foldings')}}</h1>
+<h2>{{=autor.a}}</h2>
+<hr>
+<ul>
+{{for fondo in fondos:}}
+{{=LI(A(fondo.Titulo, _href=URL("show_fondo", args=fondo.IdFondo)))}}
+{{pass}}
+</ul>

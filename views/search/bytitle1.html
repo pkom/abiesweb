@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+<h1>{{=T('Search library by title')}}</h1>
+{{#=H3(B(T('Type at least four characters to start the automatic search')))}}
+{{=T('Title:')}}
+{{=form}}
+<hr>
+{{=T('Matches - click to access file book')}}
+<br>
+<ul>
+{{for fondo in fondos:}}
+{{=LI(A(fondo.Fondos.Titulo, _href=URL('show_fondo', args=fondo.Fondos.IdFondo)))}}
+{{pass}}
+</ul>
+{{#=fondos}}
